@@ -136,17 +136,6 @@ ex () {
 # FUNCTIONS
 #######################################
 
-# Make directory and go: mkdir and enter it immediately
-mdag() {
-  if [ $# -eq 0 ]; then
-    #Display usage if no parameters given
-    echo "mdag: Make directory and go"
-    echo "Usage: mdag <dir>"
-    return
-  fi
-  mkdir -p "$1" && cd "$1"
-}
-
 # Copy directory and go: cp and enter it immediately
 cpag() {
   if [ $# -eq 0 ]; then
@@ -163,21 +152,32 @@ cpag() {
   fi
 }
 
-mvag() {
-  if [ $# -eq 0 ]; then
-    #Display usage if no parameters given
-    echo "mvag: Move directory and go"
-    echo "Usage: mvag <old_dir> <new_dir>"
-    return
-  fi
-
-  if [ -d "$2" ]; then
-    mv "$1" "$2/" && cd "$2/"
-  else
-    mv "$1" "$2/"
-  fi
+# Find string in file
+fstr () {
+  grep -Rnw "." -e "$1"
 }
 
+# Github
+gcom() {
+  if [ $# -eq 0 ]; then
+    echo "Please provide a commit message."
+    return
+  fi
+  git add .
+  git commit -m "$1"
+}
+
+gupl() {
+  if [ $# -eq 0 ]; then
+    echo "Please provide a commit message."
+    return
+  fi
+  git add .
+  git commit -m "$1"
+  git push
+}
+
+# Get md5/sha1/sha512 hash of file (use responsibly!)
 hash() {
   if [ $# -eq 0 ]; then
     #Display usage if no parameters given
@@ -199,6 +199,32 @@ hash() {
   echo "MD5    $md5"
   echo "SHA1   $sha1"
   echo "SHA512 $sha512"
+}
+
+# Make directory and go: mkdir and enter it immediately
+mdag() {
+  if [ $# -eq 0 ]; then
+    #Display usage if no parameters given
+    echo "mdag: Make directory and go"
+    echo "Usage: mdag <dir>"
+    return
+  fi
+  mkdir -p "$1" && cd "$1"
+}
+
+mvag() {
+  if [ $# -eq 0 ]; then
+    #Display usage if no parameters given
+    echo "mvag: Move directory and go"
+    echo "Usage: mvag <old_dir> <new_dir>"
+    return
+  fi
+
+  if [ -d "$2" ]; then
+    mv "$1" "$2/" && cd "$2/"
+  else
+    mv "$1" "$2/"
+  fi
 }
 
 # Navigation
@@ -236,12 +262,6 @@ up () {
   if ! cd "$d"; then
     echo "Couldn't go up $limit dirs.";
   fi
-}
-
-# Find string in file
-# Usage: fstr <string>
-fstr () {
-  grep -Rnw "." -e "$1"
 }
 
 # Get clean distribution name
@@ -313,35 +333,29 @@ ver() {
   esac
 }
 
+showmyip() {
+  local INTERFACE="enp6s0"
+
+  #Internal IP lookup
+  if command -v ip &> /dev/null; then
+    echo -n "󰛳 Internal IP: "
+    ip addr show $INTERFACE | grep "inet " | awk '{print $2}' | cut -d/ -f1
+  else
+    echo -n "󰛳 Internal IP: "
+    ifconfig $INTERFACE | grep "inet " | awk '{print $2}'
+  fi
+
+  echo -n " External IP: "
+  curl -s ifconfig.me
+}
+
 #######################################
 # ALIASES
 #######################################
 
-# ls to exa
-alias ll='exa -al --icons --color=always --group-directories-first' # my preferred listing
-alias la='exa -a --icons --color=always --group-directories-first'  # all files and dirs
-alias ls='exa -l --icons --color=always --group-directories-first'  # long format
-alias lt='exa -aT --icons --color=always --group-directories-first' # tree listing
-alias l.='exa -a | egrep "^\."'
-
-# Colourize grep output
-alias grep='grep --color=auto'
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
-
-# Confirm before overwriting something
-alias cp='cp -vi'
-alias mv='mv -vi'
-
-# Map rm to trash-cli so that file can be recovered later
-alias rm='trash -v'
-
-# More verbose copying
-alias cpv='rsync -avh --info=progress2'
-
-# Adding flags
-alias df='df -h'        # human-readable sizes
-alias free='free -m'    # show sizes in MB
+# Adding flags to existing commands
+alias df='df -h'     # human-readable sizes
+alias free='free -m' # show sizes in MB
 
 # Aliases for showing disk space and folder usage
 alias diskspace="du -S | sort -n -r |more"
@@ -349,6 +363,14 @@ alias folders='du -h --max-depth=1'
 alias dirtree='tree -CAFd'
 alias tree='tree -CAhF --dirsfirst'
 alias mountedinfo='df -hT'
+
+# Cat to bat
+DISTRIBUTION=$(distribution)
+if [ "$DISTRIBUTION" = "redhat" ] || [ "$DISTRIBUTION" = "arch" ]; then
+  alias cat='bat'
+else
+  alias cat='batcat'
+fi
 
 # chmod
 alias makex='chmod a+x'
@@ -359,23 +381,37 @@ alias 666='chmod -R 666'
 alias 755='chmod -R 755'
 alias 777='chmod -R 777'
 
-# Search files
-alias f="find . | grep "
-alias ff="fzf"
+# Colourize grep output
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
 
-# Cat to bat
-DISTRIBUTION=$(distribution)
-if [ "$DISTRIBUTION" = "redhat" ] || [ "$DISTRIBUTION" = "arch" ]; then
-  alias cat='bat'
-else
-  alias cat='batcat'
-fi 
+# Confirm before overwriting something
+alias cp='cp -vi'
+alias mv='mv -vi'
+
+# ls to exa
+alias ll='exa -al --icons --color=always --group-directories-first' # my preferred listing
+alias la='exa -a --icons --color=always --group-directories-first'  # all files and dirs
+alias ls='exa -l --icons --color=always --group-directories-first'  # long format
+alias lt='exa -aT --icons --color=always --group-directories-first' # tree listing
+alias l.='exa -a | egrep "^\."'
+
+# Map rm to trash-cli so that file can be recovered later
+alias rm='trash -v'
+
+# More verbose copying
+alias cpv='rsync -avh --info=progress2'
 
 # ps
 alias psa="ps auxf"
 alias psgrep="ps aux | grep -v grep | grep -i -e VSZ -e"
 alias psmem='ps auxf | sort -nr -k 4'
 alias pscpu='ps auxf | sort -nr -k 3'
+
+# Search files
+alias f="find . | grep "
+alias ff="fzf"
 
 # Show open ports
 alias openports='netstat -nape --inet'
@@ -395,12 +431,16 @@ alias ytv-best="yt-dlp -f bestvideo+bestaudio "
 alias update='sudo dnf upgrade && flatpak update'
 
 # Misc
+alias b='cd $OLDPWD'
 alias bashrc='nano ~/.bashrc'
+alias c='clear'
 alias count='ls * | wc -l'
+alias ipaddr='showmyip'
+alias now='date "+%Y-%m-%d %A %T %Z"'
+alias help='less ~/.bashrc_help'
 alias home='cd $HOME'
 alias n='nano'
 alias sn='sudo nano'
-alias c='clear'
 
 #######################################
 # INSTALL BASHRC SUPPORT
@@ -446,7 +486,7 @@ install_bashrc_support() {
 
   FONT_URL=$(curl -s https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep "browser_download_url.*CascadiaMono.zip" | cut -d '"' -f 4)
   curl -sL $FONT_URL -o /tmp/CascadiaMono.zip
-  
+
   unzip -o /tmp/CascadiaMono.zip
   mv -f Caskaydia*.ttf $HOME/.fonts
   rm -f /tmp/CascadiaMono.zip
@@ -455,8 +495,19 @@ install_bashrc_support() {
 }
 
 #######################################
-# SETTING THE FINAL PROMPT
+# WEBDEV HELPERS                      #
 #######################################
+
+
+
+#######################################
+# SETTING THE FINAL PROMPT            #
+#######################################
+
+# Bind CTRL+F to zi and newline if shell is interactive
+if [[ $- == *i* ]]; then
+  bind '"\C-f":"zi\n"'
+fi
 
 export PATH="$HOME/.bin:$HOME/bin:$HOME/gems/bin:$PATH"
 

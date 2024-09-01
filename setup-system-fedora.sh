@@ -121,15 +121,18 @@ configurePackages() {
 }
 
 ###############################################
-# LINK CONFIG FILES                           #
+# COPY CONFIG FILES                           #
 ###############################################
 
-echo -n "Linking configs... "
-ln -s ./.bashrc "$HOME/.bashrc"
-ln -s ./config.jsonc "$HOME/.config/fastfetch/config.jsonc"
-ln -s ./starship.toml "$HOME/.config/starship.toml"
-echo -e "${GREEN}Done!${RESET}"
+copyConfigs() {
+    echo -n "Copying configs... "
+    cp ./.bashrc "$HOME/.bashrc"
+    cp ./config.jsonc "$HOME/.config/fastfetch/config.jsonc"
+    cp ./starship.toml "$HOME/.config/starship.toml"
+    echo -e "${GREEN}Done!${RESET}"
+}
 
 checkEnv
 installPackages
 configurePackages
+copyConfigs
