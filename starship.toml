@@ -1,15 +1,15 @@
 format = """
+[](fg:#3B4852)\
 $username\
 $hostname\
 [](bg:#42525D fg:#3B4852)\
-$directory\
 [](fg:#42525D bg:#4C5E6A)\
-$git_branch\
-$git_status\
 [](fg:#4C5E6A bg:#537C99)\
 $c\
 $elixir\
 $elm\
+$git_branch\
+$git_status\
 $golang\
 $haskell\
 $java\
@@ -19,7 +19,8 @@ $nim\
 $rust\
 [](fg:#537C99 bg:#86B6D8)\
 $docker_context\
-[](fg:#86B6D8) \
+$directory\
+[ ](fg:#86B6D8)\
 """
 command_timeout = 5000
 # Disable the blank line at the start of the prompt
@@ -30,7 +31,7 @@ command_timeout = 5000
 show_always = true
 style_user = "bg:#3B4852"
 style_root = "fg:#D88686 bg:#3B4852"
-format = '[ $user]($style)'
+format = '[$user]($style)'
 
 [hostname]
 ssh_only = false
@@ -38,7 +39,7 @@ style = "bg:#3B4852"
 format = '[@$hostname $ssh_symbol]($style)'
 
 [directory]
-style = "bg:#42525D"
+style = "bg:#86B6D8"
 format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
@@ -49,6 +50,7 @@ truncation_symbol = "…/"
 "Documents" = "󰈙 "
 "Downloads" = " "
 "Music" = " "
+"Movies" = "󰎁 "
 "Pictures" = " "
 # Keep in mind that the order matters. For example:
 # "Important Documents" = " 󰈙 "

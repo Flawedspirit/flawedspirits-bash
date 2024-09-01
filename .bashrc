@@ -172,10 +172,33 @@ mvag() {
   fi
 
   if [ -d "$2" ]; then
-    mv "$1" "$2" && cd "$2"
+    mv "$1" "$2/" && cd "$2/"
   else
-    mv "$1" "$2"
+    mv "$1" "$2/"
   fi
+}
+
+hash() {
+  if [ $# -eq 0 ]; then
+    #Display usage if no parameters given
+    echo "hash: Get md5/sha1/sha512 of file"
+    echo "Usage: hash <file>"
+    return
+  fi
+
+  if [ ! -f $1 ]; then
+    echo "Argument must be a file."
+    return
+  fi
+
+  local md5=$(md5sum $1 | cut -d ' ' -f 1)
+  local sha1=$(sha1sum $1 | cut -d ' ' -f 1)
+  local sha512=$(sha512sum $1 | cut -d ' ' -f 1)
+
+  echo "Returning hash of file: $1"
+  echo "MD5    $md5"
+  echo "SHA1   $sha1"
+  echo "SHA512 $sha512"
 }
 
 # Navigation
@@ -294,7 +317,7 @@ ver() {
 # ALIASES
 #######################################
 
-# Changing "ls" to "exa"
+# ls to exa
 alias ll='exa -al --icons --color=always --group-directories-first' # my preferred listing
 alias la='exa -a --icons --color=always --group-directories-first'  # all files and dirs
 alias ls='exa -l --icons --color=always --group-directories-first'  # long format
@@ -340,6 +363,14 @@ alias 777='chmod -R 777'
 alias f="find . | grep "
 alias ff="fzf"
 
+# Cat to bat
+DISTRIBUTION=$(distribution)
+if [ "$DISTRIBUTION" = "redhat" ] || [ "$DISTRIBUTION" = "arch" ]; then
+  alias cat='bat'
+else
+  alias cat='batcat'
+fi 
+
 # ps
 alias psa="ps auxf"
 alias psgrep="ps aux | grep -v grep | grep -i -e VSZ -e"
@@ -359,6 +390,9 @@ alias yta-opus="yt-dlp --extract-audio --audio-format opus "
 alias yta-vorbis="yt-dlp --extract-audio --audio-format vorbis "
 alias yta-wav="yt-dlp --extract-audio --audio-format wav "
 alias ytv-best="yt-dlp -f bestvideo+bestaudio "
+
+# Update OS and flatpaks
+alias update='sudo dnf upgrade && flatpak update'
 
 # Misc
 alias bashrc='nano ~/.bashrc'
@@ -380,11 +414,11 @@ install_bashrc_support() {
 
   case $dtype in
     "redhat")
-      sudo dnf install --refresh arc bash-completion cabextract exa fastfetch fzf net-tools p7zip qpdf trash-cli tree unace unrar yt-dlp zoxide zpaq zstd ;;
+      sudo dnf install --refresh arc bash-completion bat cabextract exa fastfetch fzf net-tools p7zip qpdf trash-cli tree unace unrar yt-dlp zoxide zpaq zstd ;;
     "suse")
       echo "SUSE distributions are not yet supported by this installer." ;;
     "debian")
-      sudo apt update && sudo apt install arc bash-completion cabextract ciso exa fzf net-tools qpdf trash-cli tree rar unace unrar yt-dlp zoxide zpaq zstd
+      sudo apt update && sudo apt install arc bash-completion bat cabextract ciso exa fzf net-tools qpdf trash-cli tree rar unace unrar yt-dlp zoxide zpaq zstd
 
       # Fetch the latest fastfetch release URL for linux-amd64 deb file
       FASTFETCH_URL=$(curl -s https://api.github.com/repos/fastfetch-cli/fastfetch/releases/latest | grep "browser_download_url.*linux-amd64.deb" | cut -d '"' -f 4)
@@ -397,7 +431,7 @@ install_bashrc_support() {
     "gentoo")
       echo "Gentoo distributions are not yet supported by this installer." ;;
     "arch")
-      sudo paru ;;
+      sudo paru bat;;
     "slackware")
       echo "Slackware distributions are not supported by this installer." ;;
     *)
@@ -424,7 +458,7 @@ install_bashrc_support() {
 # SETTING THE FINAL PROMPT
 #######################################
 
-export PATH=$PATH:"$HOME/.local/bin:$HOME/.cargo.bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin"
+export PATH="$HOME/.bin:$HOME/bin:$HOME/gems/bin:$PATH"
 
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
