@@ -391,11 +391,11 @@ alias cp='cp -vi'
 alias mv='mv -vi'
 
 # ls to exa
-alias ll='exa -al --icons --color=always --group-directories-first' # my preferred listing
-alias la='exa -a --icons --color=always --group-directories-first'  # all files and dirs
-alias ls='exa -l --icons --color=always --group-directories-first'  # long format
-alias lt='exa -aT --icons --color=always --group-directories-first' # tree listing
-alias l.='exa -a | egrep "^\."'
+alias ll='eza -al --icons --color=always --group-directories-first --git' # my preferred listing
+alias la='eza -a --icons --color=always --group-directories-first'  # all files and dirs
+alias ls='eza -l --icons --color=always --group-directories-first'  # long format
+alias lt='eza -aT --icons --color=always --group-directories-first' # tree listing
+alias l.='eza -a | egrep "^\."'
 
 # Map rm to trash-cli so that file can be recovered later
 alias rm='trash -v'
@@ -411,7 +411,8 @@ alias pscpu='ps auxf | sort -nr -k 3'
 
 # Search files
 alias f="find . | grep "
-alias ff="fzf"
+alias ff="fzf -e"
+alias fq="fzf -q"
 
 # Show open ports
 alias openports='netstat -nape --inet'
@@ -439,6 +440,7 @@ alias ipaddr='showmyip'
 alias now='date "+%Y-%m-%d %A %T %Z"'
 alias help='less ~/.bashrc_help'
 alias home='cd $HOME'
+alias man='tldr'
 alias n='nano'
 alias sn='sudo nano'
 
@@ -509,7 +511,10 @@ if [[ $- == *i* ]]; then
   bind '"\C-f":"zi\n"'
 fi
 
-export PATH="$HOME/.bin:$HOME/bin:$HOME/gems/bin:$PATH"
+export PATH="$HOME/.atuin/bin:$HOME/.bin:$HOME/bin:$HOME/gems/bin:$PATH"
 
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
+
+[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
+eval "$(atuin init bash)"
