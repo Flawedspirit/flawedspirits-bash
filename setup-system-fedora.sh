@@ -1,7 +1,7 @@
 #!/bin/bash
 RESET='\E[0m'
 RED='\E[38;5;124m'
-YELLOW='\E[38;5;221m'
+#YELLOW='\E[38;5;221m'
 GREEN='\E[38;5;34m'
 BLUE='\E[38;5;33m'
 
@@ -60,7 +60,7 @@ installPackages() {
         cmake \
         code \
         discord \
-        exa \
+        eza \
         fastfetch \
         filezilla \
         fzf \
@@ -80,6 +80,7 @@ installPackages() {
         qdirstat \
         ruby \
         ruby-devel \
+        shellcheck \
         thunderbird \
         trash-cli \
         tree \
@@ -100,6 +101,13 @@ installPackages() {
     if [ ! -d "${HOME}/bin" ]; then mkdir -p "${HOME}/bin"; fi
     curl -o "${HOME}/bin/texpander" "https://raw.githubusercontent.com/leehblue/texpander/master/texpander.sh"
     chmod +x "${HOME}/bin/texpander"
+
+    echo "Installing Atuin..."
+    curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+    echo -n "Enter your Atuin username: "
+    read -r ATUIN_USER
+    "${HOME}/.atuin/bin/atuin" login -u "$ATUIN_USER"
+    "${HOME}/.atuin/bin/atuin" sync
 }
 
 configurePackages() {
@@ -112,27 +120,14 @@ configurePackages() {
 
     # Configure: input-remapper
     echo -n "Registering input-mapper daemon... "
-    $SUDO_CMD systemctl enable --now input-remapper
-    if [ $? -eq 0 ]; then
+    #$SUDO_CMD systemctl enable --now input-remapper
+    if $SUDO_CMD systemctl enable --now input-remapper -eq 0; then
         echo -e "${GREEN}Done!${RESET}"
     else
         echo -e "${RED}Could not register input-mapper.${RESET}"
     fi
 }
 
-###############################################
-# COPY CONFIG FILES                           #
-###############################################
-
-copyConfigs() {
-    echo -n "Copying configs... "
-    cp ./.bashrc "$HOME/.bashrc"
-    cp ./config.jsonc "$HOME/.config/fastfetch/config.jsonc"
-    cp ./starship.toml "$HOME/.config/starship.toml"
-    echo -e "${GREEN}Done!${RESET}"
-}
-
 checkEnv
 installPackages
 configurePackages
-copyConfigs
