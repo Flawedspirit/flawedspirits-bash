@@ -68,16 +68,21 @@ installPackages() {
         htop \
         input-remapper \
         java-17-openjdk \
+        java-21-openjdk \
         jp2a \
         kid3 \
         kio-gdrive \
         krita \
+        make \
+        nasm \
         net-tools \
         nextcloud-client \
         openssl-devel \
         p7zip \
         piper \
         qdirstat \
+        qemu \
+        rhythmbox \
         ruby \
         ruby-devel \
         shellcheck \
@@ -95,6 +100,15 @@ installPackages() {
         zoxide \
         zpaq \
         zstd
+
+    echo "Installing flatpaks..."
+    flatpak install -y --noninteractive --user \
+        com.github.Matoking.protontricks \
+        com.github.tchx84.Flatseal \
+        io.github.loot.loot \
+        md.obsidian.Obsidian \
+        org.kde.KStyle.Adwaita \
+        org.openmw.OpenMW
 
     # Texpander
     echo "Installing Texpander..."

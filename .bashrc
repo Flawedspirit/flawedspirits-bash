@@ -62,7 +62,7 @@ export HISTTIMEFORMAT="%F %T :: "
 
 # Append to history instead of overwriting so history is still there when launching new Bash
 shopt -s histappend
-PROMPT_COMMAND='history -a'
+PROMPT_COMMAND=('history -a')
 
 # Check window size after each command and resize lines and columns as necessary
 shopt -s checkwinsize
@@ -73,6 +73,10 @@ if [[ $iatest -gt 0 ]]; then bind "set completion-ignore-case on"; fi
 
 # Show auto-completion list automatically, without double tab
 if [[ $iatest -gt 0 ]]; then bind "set show-all-if-ambiguous on"; fi
+
+# To have colors for ls and all grep commands such as grep, egrep and zgrep
+export CLICOLOR=1
+export LS_COLORS='no=00:fi=00:di=00;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.ogg=01;35:*.mp3=01;35:*.wav=01;35:*.xml=00;31:'
 
 # Color for manpages in less makes manpages a little easier to read
 export LESS_TERMCAP_mb=$'\E[01;31m'
@@ -146,7 +150,7 @@ cpag() {
   fi
 
   if [ -d "$2" ]; then
-    cp "$1" "$2" && cd "$2"
+    cp "$1" "$2" && cd "$2" || return
   else
     cp "$1" "$2"
   fi
@@ -179,6 +183,10 @@ gupl() {
 
 # Get md5/sha1/sha512 hash of file (use responsibly!)
 hash() {
+  local md5
+  local sha1
+  local sha512
+
   if [ $# -eq 0 ]; then
     #Display usage if no parameters given
     echo "hash: Get md5/sha1/sha512 of file"
@@ -186,14 +194,14 @@ hash() {
     return
   fi
 
-  if [ ! -f $1 ]; then
+  if [ ! -f "$1" ]; then
     echo "Argument must be a file."
     return
   fi
 
-  local md5=$(md5sum $1 | cut -d ' ' -f 1)
-  local sha1=$(sha1sum $1 | cut -d ' ' -f 1)
-  local sha512=$(sha512sum $1 | cut -d ' ' -f 1)
+  md5=$(md5sum "$1" | cut -d ' ' -f 1)
+  sha1=$(sha1sum "$1" | cut -d ' ' -f 1)
+  sha512=$(sha512sum "$1" | cut -d ' ' -f 1)
 
   echo "Returning hash of file: $1"
   echo "MD5    $md5"
@@ -209,7 +217,7 @@ mdag() {
     echo "Usage: mdag <dir>"
     return
   fi
-  mkdir -p "$1" && cd "$1"
+  mkdir -p "$1" && cd "$1" || return
 }
 
 mvag() {
@@ -221,7 +229,7 @@ mvag() {
   fi
 
   if [ -d "$2" ]; then
-    mv "$1" "$2/" && cd "$2/"
+    mv "$1" "$2/" && cd "$2/" || return
   else
     mv "$1" "$2/"
   fi
@@ -392,9 +400,9 @@ alias mv='mv -vi'
 
 # ls to exa
 alias ll='eza -al --icons --color=always --group-directories-first --git' # my preferred listing
-alias la='eza -a --icons --color=always --group-directories-first'  # all files and dirs
-alias ls='eza -l --icons --color=always --group-directories-first'  # long format
-alias lt='eza -aT --icons --color=always --group-directories-first' # tree listing
+alias la='eza -a --icons --color=always --group-directories-first'        # all files and dirs
+alias ls='eza -l --icons --color=always --group-directories-first --git'  # long format
+alias lt='eza -aT --icons --color=always --group-directories-first'       # tree listing
 alias l.='eza -a | egrep "^\."'
 
 # Map rm to trash-cli so that file can be recovered later
@@ -405,7 +413,7 @@ alias cpv='rsync -avh --info=progress2'
 
 # ps
 alias psa="ps auxf"
-alias psgrep="ps aux | grep -v grep | grep -i -e VSZ -e"
+alias psgrep="ps aux | grep -v grep | grep -i -e VSZ"
 alias psmem='ps auxf | sort -nr -k 4'
 alias pscpu='ps auxf | sort -nr -k 3'
 
@@ -466,7 +474,7 @@ install_bashrc_support() {
       FASTFETCH_URL=$(curl -s https://api.github.com/repos/fastfetch-cli/fastfetch/releases/latest | grep "browser_download_url.*linux-amd64.deb" | cut -d '"' -f 4)
 
       # Download the latest fastfetch deb file
-      curl -sL $FASTFETCH_URL -o /tmp/fastfetch_latest_amd64.deb
+      curl -sL "$FASTFETCH_URL" -o /tmp/fastfetch_latest_amd64.deb
 
       # Install the downloaded deb file using apt-get
       sudo apt install /tmp/fastfetch_latest_amd64.deb ;;
@@ -484,13 +492,13 @@ install_bashrc_support() {
 
   echo -e "\E[38;5;33mInstalling required fonts...\E[0m"
   # Download required nerd font
-  mkdir -p $HOME/.fonts
+  mkdir -p "$HOME/.fonts"
 
   FONT_URL=$(curl -s https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep "browser_download_url.*CascadiaMono.zip" | cut -d '"' -f 4)
-  curl -sL $FONT_URL -o /tmp/CascadiaMono.zip
+  curl -sL "$FONT_URL" -o /tmp/CascadiaMono.zip
 
   unzip -o /tmp/CascadiaMono.zip
-  mv -f Caskaydia*.ttf $HOME/.fonts
+  mv -f Caskaydia*.ttf "$HOME/.fonts"
   rm -f /tmp/CascadiaMono.zip
 
   echo -e "\E[32mDone! Remember to set your preferred font in your terminal settings.\E[0m"
@@ -516,5 +524,5 @@ export PATH="$HOME/.atuin/bin:$HOME/.bin:$HOME/bin:$HOME/gems/bin:$PATH"
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
 
-[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
+[[ -f "$HOME/.bash-preexec.sh" ]] && source "$HOME/.bash-preexec.sh"
 eval "$(atuin init bash)"
