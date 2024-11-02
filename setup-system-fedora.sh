@@ -39,8 +39,13 @@ checkEnv() {
 
 installPackages() {
     echo "Importing keys..."
+    # VS Code
     $SUDO_CMD rpm --import https://packages.microsoft.com/keys/microsoft.asc
-    echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | $SUDO_CMD tee /etc/yum.repos.d/vscode.repo > /dev/null
+    echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | $SUDO_CMD tee /etc/yum.repos.d/vscode.repo >/dev/null
+
+    # Brave Browser
+    $SUDO_CMD dnf config-manager --add-repo https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
+    $SUDO_CMD rpm --import https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
 
     # Install packages needed for virtualization
     echo "Enabling virtualization..."
@@ -56,11 +61,14 @@ installPackages() {
         arc \
         bash-completion \
         bat \
+        brave-browser \
+        btop \
         cabextract \
         cmake \
         code \
         discord \
         eza \
+        fail2ban \
         fastfetch \
         filezilla \
         fzf \
@@ -69,7 +77,6 @@ installPackages() {
         input-remapper \
         java-17-openjdk \
         java-21-openjdk \
-        jp2a \
         kid3 \
         kio-gdrive \
         krita \
@@ -86,10 +93,11 @@ installPackages() {
         ruby \
         ruby-devel \
         shellcheck \
+        shfmt \
         thunderbird \
         trash-cli \
         tree \
-        rar \
+        ufw \
         unace \
         unrar \
         vlc \
@@ -101,15 +109,6 @@ installPackages() {
         zpaq \
         zstd
 
-    echo "Installing flatpaks..."
-    flatpak install -y --noninteractive --user \
-        com.github.Matoking.protontricks \
-        com.github.tchx84.Flatseal \
-        io.github.loot.loot \
-        md.obsidian.Obsidian \
-        org.kde.KStyle.Adwaita \
-        org.openmw.OpenMW
-
     # Texpander
     echo "Installing Texpander..."
     if [ ! -d "${HOME}/bin" ]; then mkdir -p "${HOME}/bin"; fi
@@ -118,10 +117,6 @@ installPackages() {
 
     echo "Installing Atuin..."
     curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
-    echo -n "Enter your Atuin username: "
-    read -r ATUIN_USER
-    "${HOME}/.atuin/bin/atuin" login -u "$ATUIN_USER"
-    "${HOME}/.atuin/bin/atuin" sync
 }
 
 configurePackages() {
@@ -134,12 +129,8 @@ configurePackages() {
 
     # Configure: input-remapper
     echo -n "Registering input-mapper daemon... "
-    #$SUDO_CMD systemctl enable --now input-remapper
-    if $SUDO_CMD systemctl enable --now input-remapper -eq 0; then
-        echo -e "${GREEN}Done!${RESET}"
-    else
-        echo -e "${RED}Could not register input-mapper.${RESET}"
-    fi
+    $SUDO_CMD systemctl enable --now input-remapper
+    echo -e "${GREEN}Done!${RESET}"
 }
 
 checkEnv

@@ -31,19 +31,24 @@ iatest=$(expr index "$-" i)
 #################### FLAWEDSPIRIT'S .BASHRC ####################
 
 if [ -f /usr/bin/fastfetch ]; then
-  fastfetch
+  /usr/bin/fastfetch
 fi
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then
-  . /etc/bashrc
+  source /etc/bashrc
 fi
 
 # Enable bash programmable completion features in interactive shells
 if [ -f /usr/share/bash-completion/bash_completion ]; then
-  . /usr/share/bash-completion/bash_completion
+  source /usr/share/bash-completion/bash_completion
 elif [ -f /etc/bash_completion ]; then
-  . /etc/bash_completion
+  source /etc/bash_completion
+fi
+
+# Enable atuin history completions
+if [ -f $HOME/.config/atuin-completion ]; then
+  source $HOME/.config/atuin-completion
 fi
 
 #######################################
@@ -88,7 +93,7 @@ export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
 
 #######################################
-# ARCHIVE EXTRACTION
+# ARCHIVE EXTRACTION                  #
 #######################################
 
 # Usage: ex <file> [file2] [file3] ...
@@ -137,7 +142,7 @@ ex () {
 }
 
 #######################################
-# FUNCTIONS
+# FUNCTIONS                           #
 #######################################
 
 # Copy directory and go: cp and enter it immediately
@@ -358,7 +363,7 @@ showmyip() {
 }
 
 #######################################
-# ALIASES
+# ALIASES                             #
 #######################################
 
 # Adding flags to existing commands
@@ -411,6 +416,10 @@ alias rm='trash -v'
 # More verbose copying
 alias cpv='rsync -avh --info=progress2'
 
+# Protontricks
+alias protontricks='flatpak run com.github.Matoking.protontricks'
+alias protontricks-launch='flatpak run --command=protontricks-launch com.github.Matoking.protontricks'
+
 # ps
 alias psa="ps auxf"
 alias psgrep="ps aux | grep -v grep | grep -i -e VSZ"
@@ -426,11 +435,11 @@ alias fq="fzf -q"
 alias openports='netstat -nape --inet'
 
 # yt-dlp
-alias yta-aac="yt-dlp --extract-audio --audio-format aac "
+alias yta-aac="yt-dlp -o '$HOME/yt-dlp' --extract-audio --audio-format aac"
 alias yta-best="yt-dlp --extract-audio --audio-format best "
 alias yta-flac="yt-dlp --extract-audio --audio-format flac "
 alias yta-m4a="yt-dlp --extract-audio --audio-format m4a "
-alias yta-mp3="yt-dlp --extract-audio --audio-format mp3 "
+alias yta-mp3="yt-dlp -o '$HOME/yt-dlp/%(title)s.%(ext)s' --extract-audio --audio-format mp3"
 alias yta-opus="yt-dlp --extract-audio --audio-format opus "
 alias yta-vorbis="yt-dlp --extract-audio --audio-format vorbis "
 alias yta-wav="yt-dlp --extract-audio --audio-format wav "
@@ -444,7 +453,9 @@ alias b='cd $OLDPWD'
 alias bashrc='nano ~/.bashrc'
 alias c='clear'
 alias count='ls * | wc -l'
+alias etcher='$HOME/bin/etcher/balena-etcher'
 alias ipaddr='showmyip'
+alias mp3gain='find . -name "*.mp3" -exec mp3gain -a -k {} \;'
 alias now='date "+%Y-%m-%d %A %T %Z"'
 alias help='less ~/.bashrc_help'
 alias home='cd $HOME'
@@ -453,7 +464,7 @@ alias n='nano'
 alias sn='sudo nano'
 
 #######################################
-# INSTALL BASHRC SUPPORT
+# INSTALL BASHRC SUPPORT              #
 #######################################
 
 install_bashrc_support() {
@@ -508,7 +519,7 @@ install_bashrc_support() {
 # WEBDEV HELPERS                      #
 #######################################
 
-
+alias cpdate='echo -n `date +"%Y-%m-%dT%H:%M:%S%:z"` | wl-copy; echo "Date and time copied to clipboard"'
 
 #######################################
 # SETTING THE FINAL PROMPT            #
@@ -526,3 +537,4 @@ eval "$(zoxide init bash)"
 
 [[ -f "$HOME/.bash-preexec.sh" ]] && source "$HOME/.bash-preexec.sh"
 eval "$(atuin init bash)"
+. "$HOME/.cargo/env"

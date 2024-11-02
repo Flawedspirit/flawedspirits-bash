@@ -1,0 +1,58 @@
+ALIAS           USAGE                   NOTES
+-----------------------------------------------------------------------------------------------------
+000             000 <dir|file>        ┬ Chmod shorthands
+600             600 <dir|file>        │
+644             644 <dir|file>        │
+666             666 <dir|file>        │
+755             755 <dir|file>        │
+777             777 <dir|file>        ┘
+b                                       Back to previous dir
+bashrc                                  Edit ~/.bashrc
+c                                       Clear the terminal
+count                                   Get number of files in dir/subdirs
+cpag            cpag <dir> <new_dir>    Copy directory and enter it
+dirtree                                 Get tree view of all subdirs
+diskspace                               Get file size of all dirs
+distribution                            Get friendly distribution type
+ex              ex <file>               Extract container file
+f               f <string>              Find file in current dir with provided string
+ff                                      Find file interactively with fzf
+fq                                      Find file with fzf using provided string
+folders                                 Get list of dirs in current dir
+fstr            fstr <string>           Find string in file
+gcom            gcom <string>           Stage all files, and commit
+gupl            gupl <string>           Stage all files, commit, and push
+hash            hash <file>             Get md5/sha1/sha512 hash of file
+help                                    Print this help file
+home                                    Go to home dir
+ipaddr                                  Get internal and external IP address
+ll                                      Show all files in long format (including git status)
+la                                      Show all files in grid format
+ls                                      Show non-hidden files in long format (including git format)
+lt                                      Show all files in tree format, including subdirs
+l.                                      Show only hidden files and dirs
+makex           makex <file>            Make file executable
+mdag            mdag <dir>              Make dir and enter it
+mvag            mvag <dir> <new_dir>    Move dir and enter it
+mountedinfo                             Get list of all mounted filesystems
+n               n <file>                Edit file with nano
+now                                     Get current date and time
+openports                               Get all open ports on system
+psa                                     List running processes
+psgrep                                  List running processes with a certain name
+psmem                                   List running processes sorted by RAM usage
+pscpu                                   List running processes sorted by CPU usage
+sn              sn <file>               Edit file with sudo nano
+tree                                    Get dir tree under current dir
+up              up [num]                Go up one or more dir levels
+update                                  Update system packages and flatpaks
+ver                                     Get current distro version
+yta-aac         yta-aac <url>           Download YT video as audio as .aac
+yta-best        yta-best <url>          Download YT video as audio in best format possible
+yta-flac        yta-flac <url>          Download YT video as audio as .flac
+yta-mp3         yta-mp3 <url>           Download YT video as audio as .mp3
+yta-opus        yta-opus <url>          Download YT video as audio as .opus
+yta-vorbis      yta-vorbis <url>        Download YT video as audio as .ogg
+yta-wav         yta-wav <url>           Download YT video as audio as .wav
+ytv-best        ytv-best <url>          Download TY video in best format possible
+
